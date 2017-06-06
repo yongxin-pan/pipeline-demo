@@ -1,0 +1,28 @@
+#!/usr/bin/env groovy
+
+pipeline {
+	agent any
+	
+	stages {
+		stage('Build') {
+			steps {
+				echo "Building.. Path Before: ${env.PATH}"
+				//env.PATH="${env.PATH}:/usr/bin"
+				echo "Building.. Path After: ${env.PATH}"
+			}
+		}
+		stage('Test')  {
+			steps {
+				echo "Testing.. Build name: ${currentBuild.displayName}"
+			//	echo $currentBuild.displayName
+				
+			}
+		}
+		stage('Deploy') {
+			steps {
+				echo 'Deploy..'
+			}
+		}
+	}
+	
+}
