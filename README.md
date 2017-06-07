@@ -16,7 +16,7 @@
 **multiple-branch pipeline project usage**
   * apply in master/release build
 
-** shared lib usage **
+**shared lib usage**
   * how to use shared lib
   * best practice for shared lib
 
