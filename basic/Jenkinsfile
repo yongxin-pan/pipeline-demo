@@ -1,0 +1,39 @@
+#!/usr/bin/env groovy
+
+pipeline {
+  agent { label 'master' }
+  environment {
+     BRANCH_NAME = 'release2.0-20160907'  
+     BUILD_NUMBER = '#1'
+  }
+  parameters {
+     string(name: 'BRANCH_NAME', defaultValue: 'master', description: 'branch name')
+	 string(name: 'BUILD_NUM', defaultValue: '1.0.0', description: 'build number')
+	 booleanParam(name: "DEBUG_MODE", defaultValue: true, description: '')
+  }
+	
+  stages {
+	stage('Build') {
+	  steps {
+		echo "Building.. PARAMETERS: ${params.BRANCH_NAME}.${params.BUILD_NUM}"
+	  }
+	}
+	stage('Version Handling') {
+      steps {
+		script {
+			def version = null
+			branch = ("branch-${env.BUILD_NUMBER}-${env.BRANCH_NAME}" =~ /\\|\/|:|"|<|>|\||\?|\*|\-|\#|\./).replaceAll("_")
+			version = "0.0.0-${branch}"
+			echo "version: ${version}"
+            writeFile([file: 'version.txt', text: version])
+            archive('version.txt')
+		}
+	  }
+	}		
+	stage('Deploy') {
+		steps {
+			echo 'Deploy..'
+		}
+	}
+  }
+}
