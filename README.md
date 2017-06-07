@@ -1,8 +1,8 @@
 # pipeline-demo : 调研Jenkins configuration的scm管理方案
 **jenkins pipeline basic**
-  * variable usage
-  * parameter usage
-  * native method usage
+  * variable usage  - done
+  * parameter usage - done
+  * native method usage -done
   * credential & passwd usage
   * recording test and archive
   * post action usage
