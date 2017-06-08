@@ -2,14 +2,17 @@
 
 pipeline {
   agent { label 'master' }
+  triggers {
+    	pollSCM('H/1 9-20 * * 1-5')  // scm polling cron    
+  }
   environment {
-     BRANCH_NAME = 'release2.0-20160907'  
-     BUILD_NUMBER = '#1'
+      	BRANCH_NAME = 'release2.0-20160907'  
+      	BUILD_NUMBER = '#1'
   }
   parameters {
-     string(name: 'BRANCH_NAME', defaultValue: 'master', description: 'branch name')
-	 string(name: 'BUILD_NUM', defaultValue: '1.0.0', description: 'build number')
-	 booleanParam(name: "DEBUG_MODE", defaultValue: true, description: '')
+	string(name: 'BRANCH_NAME', defaultValue: 'master', description: 'branch name')
+        string(name: 'BUILD_NUM', defaultValue: '1.0.0', description: 'build number')
+	booleanParam(name: "DEBUG_MODE", defaultValue: true, description: '')
   }
 	
   stages {
