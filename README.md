@@ -4,7 +4,7 @@
   * parameter usage - done
   * native method usage -done
   * credential & passwd usage
-  * recording test and archive  - done
+  * recording test and archive  
   * post action usage  - done
   * retries and time-out usage
 
