@@ -3,7 +3,7 @@
 pipeline {
   agent { label 'master' }
   triggers {
-      pollSCM('H/1 9-20 * * 1-5')  // scm polling cron
+      pollSCM('H/2 9-20 * * 1-5')  // scm polling cron
   }
   environment {
      BRANCH_NAME = 'release2.0-20160907'  
