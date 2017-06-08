@@ -4,8 +4,8 @@
   * parameter usage - done
   * native method usage -done
   * credential & passwd usage
-  * recording test and archive
-  * post action usage
+  * recording test and archive  - done
+  * post action usage  - done
   * retries and time-out usage
 
 **实例化一个基于pipeline的jenkins build**

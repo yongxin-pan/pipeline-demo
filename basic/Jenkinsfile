@@ -21,12 +21,18 @@ pipeline {
 	stage('Version Handling') {
       steps {
 		script {
-			def version = null
-			branch = ("branch-${env.BUILD_NUMBER}-${env.BRANCH_NAME}" =~ /\\|\/|:|"|<|>|\||\?|\*|\-|\#|\./).replaceAll("_")
-			version = "0.0.0-${branch}"
-			echo "version: ${version}"
-            writeFile([file: 'version.txt', text: version])
-            archive('version.txt')
+		  try {  
+    		  if (binding.variables.get() != 'release') {		
+    			def version = null
+    			branch = ("branch-${env.BUILD_NUMBER}-${env.BRANCH_NAME}" =~ /\\|\/|:|"|<|>|\||\?|\*|\-|\#|\./).replaceAll("_")
+    			version = "0.0.0-${branch}"
+    			echo "version: ${version}"
+                writeFile([file: 'version.txt', text: version])
+                archive('version.txt')
+		      }
+		  } catch (Exception e) {
+		     echo 'i am in catch exception!'; // to wrap exception so that the build will not marked as failed
+		  }    
 		}
 	  }
 	}		
@@ -36,4 +42,22 @@ pipeline {
 		}
 	}
   }
+  post {
+    always {
+        echo 'One way or another, I have finished'
+        deleteDir() /* clean up our workspace */
+    }
+    success {
+        echo 'I succeeeded!'
+    }
+    unstable {
+        echo 'I am unstable :/'
+    }
+    failure {
+        echo 'I failed :('
+    }
+    changed {
+        echo 'Things were different before...'
+    }
+  }  
 }
