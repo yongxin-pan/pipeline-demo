@@ -1,12 +1,12 @@
 #!/usr/bin/env groovy
 
 pipeline {
-  agent { label 'master' }
+  agent { label 'branch' }
   triggers {
       pollSCM('H/2 9-20 * * 1-5')  // scm polling cron
   }
   environment {
-     BRANCH_NAME = 'release2.0-20171102'  
+     BRANCH_NAME = 'release1.0-20171102'  
      BUILD_NUMBER = '#1'
   }
   parameters {
