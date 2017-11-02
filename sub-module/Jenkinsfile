@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-
+#master change only for comments.
 pipeline {
 	agent any
 	
