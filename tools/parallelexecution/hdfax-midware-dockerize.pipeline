@@ -1,0 +1,80 @@
+node{
+	checkout([$class: 'GitSCM', \
+			branches: [[name: '*/master']], \
+			doGenerateSubmoduleConfigurations: false, \
+			extensions: [], \
+			submoduleCfg: [], \
+			userRemoteConfigs: [[credentialsId: '24a5f272-eeec-4f27-bcc5-a51ebcdbfacf', url: 'ssh://vcs-user@oa.hengjs.com:23/diffusion/EIFFINTRGRATIONSCRIPTS/eiff-integration-scripts.git']]\
+			])
+	String current_date = new Date().format('yyyyMMdd')
+	println "Current date is :" + current_date
+	
+	def userCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause).toString()
+	def timeTriggerCause = currentBuild.rawBuild.getCause(hudson.triggers.TimerTrigger$TimerTriggerCause).toString()
+	def scmTriggerCause = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause).toString()		
+	println userCause 
+	println timeTriggerCause 
+	println scmTriggerCause
+	
+	def planDir = new File("/var/lib/jenkins/scripts/release-plan/")
+	def future=[]
+
+	println "Start to build release plan: " + releasePlan
+	println getAppVersions(releasePlan)
+	
+	if (userCause != "null"){
+		println "Triggered by User for midware: " + midware
+        buildMidwareJob(midware,releasePlan);
+	}else if(scmTriggerCause != "null"){
+		println "Triggered by SCM"
+		buildMidwareJob(getCandidateRelease(planDir));
+	}else if(timeTriggerCause != "null"){
+		println "Triggered by Time"
+		getDeployList(planDir).each { plan ->
+			println "Start to build version: " + plan
+			buildMidwareJob(plan);
+		}
+	}
+}
+
+def buildMidwareJob(releasePlan) {
+    def midwareJobs = ["hdfax-lts-Dockerize-build",\
+	                   "hdfax-rocketmq-Dockerize-build",\
+					   "hdfax-mysql-Dockerize-build",\
+					   "hdfax-apollo-Dockerize-build"]
+    def builds = [:]
+	midwareJobs.each { job ->
+        builds[job] = {
+            node {
+                buildMidwareJob(job,releasePlan)
+            }
+        }
+    }
+	parallel builds
+}
+	
+def buildMidwareJob(jobName,releasePlan) {
+		build job: jobName, \
+		      parameters: [string(name: 'tag', value: releasePlan), \
+		                   string(name: 'app_versions', value: getAppVersions(releasePlan))]
+}
+
+def getAppVersions(plan){
+	File planFile = new File("/var/lib/jenkins/scripts/release-plan/"+plan)
+	return planFile.readLines().toString().replace("[", "").replace("]", "").trim();
+}
+
+def getCandidateRelease(planDir) {
+	return getDeployList(planDir).sort()[0]	
+}
+
+def getDeployList(planDir) {
+	def deployList = []
+	planDir.listFiles().findAll().each { it ->
+		println "release plan file: " + it.toString()
+		if (it.toString().contains("Deploy-")){
+			deployList.add(it.toString().substring(it.toString().indexOf('Deploy-')))
+		}			
+	}
+	return deployList
+}
